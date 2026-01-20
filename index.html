@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Daily Bread - 오늘의 성경 말씀</title>
+    <meta name="description" content="매일 새로운 성경 말씀으로 하루를 시작하세요. 랜덤 성경 구절과 함께하는 영적 여정.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Nanum+Myeongjo:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-gold: #c9a227;
+            --accent-gold-light: #e6c35c;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-primary: #1a1a2e;
+            --text-secondary: #5a5a7a;
+            --shadow-soft: 0 25px 60px rgba(0, 0, 0, 0.15);
+            --shadow-gold: 0 10px 40px rgba(201, 162, 39, 0.2);
+        }
+
+        body {
+            font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #f8f6f3 0%, #ebe7e0 50%, #e0dcd4 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 배경 패턴 */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231a1a2e' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            padding: 35px 20px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            position: relative;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .logo-cross {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        /* 다크모드 토글 버튼 */
+        .theme-toggle {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 26px;
+            border-radius: 13px;
+            background: #e0dcd4;
+            border: none;
+            cursor: pointer;
+            padding: 3px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle::before {
+            content: '☀️';
+            position: absolute;
+            left: 5px;
+            font-size: 0.75rem;
+        }
+
+        .theme-toggle::after {
+            content: '🌙';
+            position: absolute;
+            right: 5px;
+            font-size: 0.75rem;
+        }
+
+        .theme-toggle-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #3a3a4d;
+        }
+
+        body.dark-mode .theme-toggle-circle {
+            transform: translateX(24px);
+            background: #1a1a28;
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            max-width: 100%;
+        }
+
+        /* 말씀 카드 */
+        .verse-card {
+            background: var(--card-bg);
+            border-radius: 4px;
+            padding: 50px 40px;
+            margin: 20px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(201, 162, 39, 0.15);
+        }
+
+        .verse-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .verse-card::before,
+        .verse-card::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--accent-gold);
+            opacity: 0.5;
+        }
+
+        .verse-card::before {
+            top: 15px;
+            left: 15px;
+            border-top: 2px solid;
+            border-left: 2px solid;
+        }
+
+        .verse-card::after {
+            bottom: 15px;
+            right: 15px;
+            border-bottom: 2px solid;
+            border-right: 2px solid;
+        }
+
+        .verse-decoration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .verse-decoration span {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            margin: 0 20px;
+        }
+
+        .verse-decoration::before,
+        .verse-decoration::after {
+            content: '';
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+
+        .verse-text {
+            font-size: 1.4rem;
+            line-height: 2.2;
+            color: var(--text-primary);
+            margin-bottom: 35px;
+            white-space: pre-line;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            word-break: keep-all;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+
+        .verse-reference {
+            font-size: 1rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.08), rgba(201, 162, 39, 0.03));
+            border: 1px solid rgba(201, 162, 39, 0.2);
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        /* 버튼 영역 */
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 35px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .btn {
+            padding: 18px 28px;
+            border: none;
+            border-radius: 2px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Noto Serif KR', serif;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(26, 26, 46, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: #252545;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(26, 26, 46, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--primary-color);
+            border: 1px solid rgba(26, 26, 46, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* 로딩 화면 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #f8f6f3 0%, #ebe7e0 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-icon::before {
+            content: '✝';
+            font-size: 3rem;
+            color: var(--accent-gold);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+        }
+
+        .loading-dots span {
+            animation: dots 1.4s infinite;
+            opacity: 0;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dots {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0;
+            }
+
+            40% {
+                opacity: 1;
+            }
+        }
+
+        /* 모달 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 4px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: translateY(30px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            background: var(--primary-color);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .saved-verse-item {
+            padding: 20px;
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .saved-verse-item:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 5px 20px rgba(201, 162, 39, 0.1);
+        }
+
+        .saved-verse-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .saved-verse-text {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+            white-space: pre-line;
+            margin-bottom: 12px;
+            padding-right: 30px;
+        }
+
+        .saved-verse-reference {
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .saved-verse-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .delete-verse-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f5f5f5;
+            color: #999;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-verse-btn:hover {
+            background: #ff4444;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .no-saved-verses {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 50px 20px;
+            font-size: 1rem;
+        }
+
+        .no-saved-verses small {
+            display: block;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+            padding: 14px;
+        }
+
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-color);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 2px;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 480px) {
+            .header {
+                padding: 28px 15px;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .verse-card {
+                padding: 40px 24px;
+                margin: 12px;
+            }
+
+            .verse-card::before,
+            .verse-card::after {
+                width: 18px;
+                height: 18px;
+            }
+
+            .verse-text {
+                font-size: 1.25rem;
+                line-height: 2.3;
+                letter-spacing: 0.8px;
+                word-spacing: 2px;
+            }
+
+            .verse-reference {
+                font-size: 0.9rem;
+                padding: 10px 24px;
+            }
+
+            .buttons {
+                max-width: 300px;
+                padding: 0 10px;
+            }
+
+            .btn {
+                padding: 16px 22px;
+                font-size: 0.9rem;
+            }
+
+            .saved-verse-text {
+                font-size: 1.05rem;
+                line-height: 2.1;
+                letter-spacing: 0.5px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .verse-text {
+                font-size: 1.15rem;
+                line-height: 2.2;
+                letter-spacing: 0.6px;
+            }
+
+            .verse-card {
+                padding: 32px 20px;
+            }
+
+            .saved-verse-text {
+                font-size: 1rem;
+                line-height: 2;
+            }
+        }
+
+        /* 다크모드 지원 - 클래스 기반 */
+        body.dark-mode {
+            --card-bg: rgba(30, 30, 45, 0.98);
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            background: linear-gradient(180deg, #1a1a28 0%, #12121c 100%);
+        }
+
+        body.dark-mode .header {
+            background: linear-gradient(180deg, rgba(30, 30, 45, 0.9) 0%, rgba(30, 30, 45, 0.7) 100%);
+            border-color: rgba(201, 162, 39, 0.15);
+        }
+
+        body.dark-mode .logo {
+            color: #e8e8f0;
+        }
+
+        body.dark-mode .btn-secondary {
+            background: rgba(40, 40, 55, 0.95);
+            color: #e8e8f0;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: rgba(50, 50, 65, 0.95);
+        }
+
+        body.dark-mode .saved-verse-item {
+            background: rgba(40, 40, 55, 0.5);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .saved-verse-item:hover {
+            border-color: var(--accent-gold);
+        }
+
+        body.dark-mode .modal-content {
+            background: #1e1e2d;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .delete-verse-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+
+        body.dark-mode .loading {
+            background: linear-gradient(180deg, #1a1a28 0%, #12121c 100%);
+        }
+
+        body.dark-mode .loading-text {
+            color: #a0a0b8;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 배경 패턴 -->
+    <div class="bg-pattern"></div>
+
+    <!-- 로딩 화면 -->
+    <div class="loading" id="loading">
+        <div class="loading-icon"></div>
+        <div class="loading-text">
+            말씀을 준비합니다
+            <span class="loading-dots">
+                <span>.</span><span>.</span><span>.</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-cross">✝</span>
+            Daily Bread
+        </div>
+        <div class="subtitle">오늘 하루를 위한 말씀</div>
+        <button class="theme-toggle" id="themeToggle" title="다크모드 전환">
+            <span class="theme-toggle-circle"></span>
+        </button>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="container">
+        <div class="verse-card" id="verseCard">
+            <div class="verse-decoration">
+                <span>✦</span>
+            </div>
+            <div class="verse-text" id="verseText">성경 말씀이 여기에 표시됩니다</div>
+            <div class="verse-reference" id="verseReference">성경 0:0</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" id="newVerseBtn">
+                🔄 새로운 말씀 보기
+            </button>
+            <button class="btn btn-secondary" id="saveVerseBtn">
+                ⭐ 이 구절 저장하기
+            </button>
+            <button class="btn btn-secondary" id="viewSavedVersesBtn">
+                📖 저장한 말씀 보기
+            </button>
+            <button class="btn btn-secondary" id="shareVerseBtn">
+                📤 공유하기
+            </button>
+        </div>
+    </main>
+
+    <!-- 저장된 말씀 모달 -->
+    <div class="modal" id="savedVersesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>� 저장한 말씀</h2>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body" id="savedVersesList"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="clearSavedVersesBtn">
+                    모두 삭제
+                </button>
+                <button class="btn btn-primary" id="closeModalBtn">
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 성경 구절 데이터베이스 (인라인)
+        const bibleVerses = [
+            { text: "태초에 하나님이\n천지를 창조하시니라", reference: "창세기 1:1" },
+            { text: "하나님이 자기 형상\n곧 하나님의 형상대로 사람을 창조하시되\n남자와 여자를 창조하시고", reference: "창세기 1:27" },
+            { text: "여호와 하나님이 땅의 흙으로 사람을 지으시고\n생기를 그 코에 불어넣으시니\n사람이 생령이 되니라", reference: "창세기 2:7" },
+            { text: "두려워하지 말라\n내가 너와 함께 있음이라\n놀라지 말라 나는 네 하나님이 됨이라", reference: "창세기 26:24" },
+            { text: "내가 네게 복을 주고 또 네 자손을\n하늘의 별처럼 번성하게 하리라", reference: "창세기 26:4" },
+            { text: "나는 스스로 있는 자이니라", reference: "출애굽기 3:14" },
+            { text: "여호와는 나의 힘이요 노래시며\n나의 구원이시로다", reference: "출애굽기 15:2" },
+            { text: "강하고 담대하라 두려워하지 말며 놀라지 말라\n네가 어디로 가든지 네 하나님 여호와가\n너와 함께 하느니라", reference: "여호수아 1:9" },
+            { text: "여호와는 나의 목자시니\n내게 부족함이 없으리로다", reference: "시편 23:1" },
+            { text: "내가 사망의 음침한 골짜기로\n다닐지라도 해를 두려워하지 않을 것은\n주께서 나와 함께 하심이라", reference: "시편 23:4" },
+            { text: "주의 말씀은 내 발에 등이요\n내 길에 빛이니이다", reference: "시편 119:105" },
+            { text: "하늘이 하나님의 영광을 선포하고\n궁창이 그의 손으로 하신 일을 나타내는도다", reference: "시편 19:1" },
+            { text: "여호와를 기뻐하라\n그가 네 마음의 소원을\n네게 이루어 주시리로다", reference: "시편 37:4" },
+            { text: "너의 짐을 여호와께 맡기라\n그가 너를 붙드시고\n의인의 요동함을 영원히 허락하지 아니하시리로다", reference: "시편 55:22" },
+            { text: "하나님은 우리의 피난처시요 힘이시니\n환난 중에 만날 큰 도움이시라", reference: "시편 46:1" },
+            { text: "여호와께 감사하라\n그는 선하시며\n그 인자하심이 영원함이로다", reference: "시편 107:1" },
+            { text: "이 날은 여호와께서 정하신 것이라\n이 날에 우리가 즐거워하고\n기뻐하리로다", reference: "시편 118:24" },
+            { text: "내가 산을 향하여 눈을 들리라\n나의 도움이 어디서 올까\n나의 도움은 천지를 지으신\n여호와에게서로다", reference: "시편 121:1-2" },
+            { text: "여호와는 가까이 하는 모든 자\n곧 진실하게 가까이 하는 모든 자에게\n가까이 하시는도다", reference: "시편 145:18" },
+            { text: "나의 영혼아 네가 어찌하여 낙심하며\n어찌하여 내 속에서 불안해 하는가\n하나님께 소망을 두라", reference: "시편 42:5" },
+            { text: "내가 주께 감사하옴은\n나를 지으심이 심히 기묘하심이라\n주께서 하시는 일이 기이함을\n내 영혼이 잘 아나이다", reference: "시편 139:14" },
+            { text: "마음을 다하여 여호와를 신뢰하고\n네 명철을 의지하지 말라", reference: "잠언 3:5" },
+            { text: "너는 범사에 그를 인정하라\n그리하면 네 길을 지도하시리라", reference: "잠언 3:6" },
+            { text: "여호와를 경외하는 것이\n지혜의 근본이요\n거룩하신 자를 아는 것이\n명철이니라", reference: "잠언 9:10" },
+            { text: "의인의 길은 돋는 햇살 같아서\n크게 빛나 한낮의 광명에 이르거니와", reference: "잠언 4:18" },
+            { text: "온유한 대답은 분노를 쉬게 하여도\n과격한 말은 노를 격동하느니라", reference: "잠언 15:1" },
+            { text: "사랑은 모든 허물을 가리우느니라", reference: "잠언 10:12" },
+            { text: "근심이 사람의 마음에 있으면\n그것이 눌리게 하나\n선한 말은 그것을 즐겁게 하느니라", reference: "잠언 12:25" },
+            { text: "두려워하지 말라 내가 너와 함께 함이라\n놀라지 말라 나는 네 하나님이 됨이라\n내가 너를 굳세게 하리라\n참으로 너를 도와 주리라", reference: "이사야 41:10" },
+            { text: "오직 여호와를 앙망하는 자는\n새 힘을 얻으리니\n독수리가 날개치며 올라감 같을 것이요\n달음박질하여도 곤비하지 아니하겠고\n걸어가도 피곤하지 아니하리로다", reference: "이사야 40:31" },
+            { text: "너는 두려워하지 말라\n내가 너를 구속하였고\n내가 너를 지명하여 불렀나니\n너는 내 것이라", reference: "이사야 43:1" },
+            { text: "내가 알거니와\n나를 향한 나의 생각은 평안이요\n재앙이 아니니라\n너희에게 미래와 희망을 주려 하는 것이니라", reference: "예레미야 29:11" },
+            { text: "너희가 나를 전심으로 찾으면\n만나리라", reference: "예레미야 29:13" },
+            { text: "심령이 가난한 자는 복이 있나니\n천국이 그들의 것임이요", reference: "마태복음 5:3" },
+            { text: "애통하는 자는 복이 있나니\n그들이 위로를 받을 것임이요", reference: "마태복음 5:4" },
+            { text: "온유한 자는 복이 있나니\n그들이 땅을 기업으로 받을 것임이요", reference: "마태복음 5:5" },
+            { text: "의에 주리고 목마른 자는 복이 있나니\n그들이 배부를 것임이요", reference: "마태복음 5:6" },
+            { text: "긍휼히 여기는 자는 복이 있나니\n그들이 긍휼히 여김을 받을 것임이요", reference: "마태복음 5:7" },
+            { text: "마음이 청결한 자는 복이 있나니\n그들이 하나님을 볼 것임이요", reference: "마태복음 5:8" },
+            { text: "화평하게 하는 자는 복이 있나니\n그들이 하나님의 아들이라 일컬음을 받을 것임이요", reference: "마태복음 5:9" },
+            { text: "너희는 세상의 빛이라\n산 위에 있는 동네가\n숨겨지지 못할 것이요", reference: "마태복음 5:14" },
+            { text: "너희는 세상의 소금이니\n소금이 만일 그 맛을 잃으면\n무엇으로 짜게 하리요", reference: "마태복음 5:13" },
+            { text: "그러므로 내일 일을 위하여 염려하지 말라\n내일 일은 내일이 염려할 것이요\n한 날의 괴로움은 그날로 족하니라", reference: "마태복음 6:34" },
+            { text: "구하라 그리하면 너희에게 주실 것이요\n찾으라 그리하면 찾아낼 것이요\n문을 두드리라 그리하면 너희에게 열릴 것이니", reference: "마태복음 7:7" },
+            { text: "수고하고 무거운 짐 진 자들아\n다 내게로 오라\n내가 너희를 쉬게 하리라", reference: "마태복음 11:28" },
+            { text: "나는 심히 온유하고 겸손하니\n나의 멍에를 메고 내게 배우라\n그리하면 너희 마음이 쉼을 얻으리니", reference: "마태복음 11:29" },
+            { text: "너희는 먼저 그의 나라와\n그의 의를 구하라\n그리하면 이 모든 것을\n너희에게 더하시리라", reference: "마태복음 6:33" },
+            { text: "태초에 말씀이 계시니라\n이 말씀이 하나님과 함께 계셨으니\n이 말씀은 곧 하나님이시니라", reference: "요한복음 1:1" },
+            { text: "하나님이 세상을 이처럼 사랑하사\n독생자를 주셨으니\n이는 그를 믿는 자마다 멸망하지 않고\n영생을 얻게 하려 하심이라", reference: "요한복음 3:16" },
+            { text: "예수께서 이르시되\n내가 곧 길이요 진리요 생명이니\n나로 말미암지 않고는\n아버지께로 올 자가 없느니라", reference: "요한복음 14:6" },
+            { text: "평안을 너희에게 끼치노니\n곧 나의 평안을 너희에게 주노라\n내가 너희에게 주는 것은\n세상이 주는 것과 같지 아니하니라", reference: "요한복음 14:27" },
+            { text: "내가 포도나무요\n너희는 가지라\n그가 내 안에, 내가 그 안에 거하면\n사람이 열매를 많이 맺나니", reference: "요한복음 15:5" },
+            { text: "너희가 내 안에 거하고\n내 말이 너희 안에 거하면\n무엇이든지 원하는 대로 구하라\n그리하면 이루리라", reference: "요한복음 15:7" },
+            { text: "진리를 알지니\n진리가 너희를 자유롭게 하리라", reference: "요한복음 8:32" },
+            { text: "나는 부활이요 생명이니\n나를 믿는 자는 죽어도 살겠고\n무릇 살아서 나를 믿는 자는\n영원히 죽지 아니하리니", reference: "요한복음 11:25-26" },
+            { text: "내가 선한 목자라\n선한 목자는 양들을 위하여\n목숨을 버리거니와", reference: "요한복음 10:11" },
+            { text: "내가 그들에게 영생을 주노니\n영원히 멸망하지 아니할 것이요\n또 그들을 내 손에서\n빼앗을 자가 없느니라", reference: "요한복음 10:28" },
+            { text: "새 계명을 너희에게 주노니\n서로 사랑하라\n내가 너희를 사랑한 것 같이\n너희도 서로 사랑하라", reference: "요한복음 13:34" },
+            { text: "그러므로 우리가 믿음으로 의롭다 하심을 받았으니\n우리 주 예수 그리스도로 말미암아\n하나님과 화평을 누리자", reference: "로마서 5:1" },
+            { text: "우리가 알거니와\n하나님을 사랑하는 자\n곧 그의 뜻대로 부르심을 입은 자들에게는\n모든 것이 합력하여 선을 이루느니라", reference: "로마서 8:28" },
+            { text: "만일 하나님이 우리를 위하시면\n누가 우리를 대적하리요", reference: "로마서 8:31" },
+            { text: "이 모든 일에 우리를 사랑하시는 이로 말미암아\n우리가 넉넉히 이기느니라", reference: "로마서 8:37" },
+            { text: "그런즉 믿음, 소망, 사랑\n이 세 가지는 항상 있을 것인데\n그 중에 제일은 사랑이라", reference: "고린도전서 13:13" },
+            { text: "사랑은 오래 참고 사랑은 온유하며\n시기하지 아니하며\n사랑은 자랑하지 아니하며\n교만하지 아니하며", reference: "고린도전서 13:4" },
+            { text: "그러므로 누구든지 그리스도 안에 있으면\n새로운 피조물이라\n이전 것은 지나갔으니\n보라 새 것이 되었도다", reference: "고린도후서 5:17" },
+            { text: "나의 은혜가 네게 족하도다\n이는 내 능력이 약한 데서\n온전하여짐이라", reference: "고린도후서 12:9" },
+            { text: "오직 성령의 열매는\n사랑과 희락과 화평과\n오래 참음과 자비와 양선과\n충성과 온유와 절제니", reference: "갈라디아서 5:22-23" },
+            { text: "내가 그리스도와 함께\n십자가에 못 박혔나니\n그런즉 이제는 내가 사는 것이 아니요\n오직 내 안에 그리스도께서 사시는 것이라", reference: "갈라디아서 2:20" },
+            { text: "너희는 그 은혜에 의하여\n믿음으로 말미암아 구원을 받았으니\n이것은 너희에게서 난 것이 아니요\n하나님의 선물이라", reference: "에베소서 2:8" },
+            { text: "내게 능력 주시는 자 안에서\n내가 모든 것을 할 수 있느니라", reference: "빌립보서 4:13" },
+            { text: "아무것도 염려하지 말고\n다만 모든 일에 기도와 간구로\n너희 구할 것을 감사함으로\n하나님께 아뢰라", reference: "빌립보서 4:6" },
+            { text: "하나님의 모든 지각에 뛰어난\n그 평강이\n그리스도 예수 안에서\n너희 마음과 생각을 지키시리라", reference: "빌립보서 4:7" },
+            { text: "나의 하나님이 그리스도 예수 안에서\n영광 가운데 그 풍성한 대로\n너희 모든 쓸 것을 채우시리라", reference: "빌립보서 4:19" },
+            { text: "무슨 일을 하든지\n마음을 다하여 주께 하듯 하고\n사람에게 하듯 하지 말라", reference: "골로새서 3:23" },
+            { text: "그리스도의 평강이 너희 마음을 주장하게 하라\n너희는 평강을 위하여\n한 몸으로 부르심을 받았나니\n너희는 또한 감사하는 자가 되라", reference: "골로새서 3:15" },
+            { text: "항상 기뻐하라\n쉬지 말고 기도하라\n범사에 감사하라\n이것이 그리스도 예수 안에서\n너희를 향하신 하나님의 뜻이니라", reference: "데살로니가전서 5:16-18" },
+            { text: "하나님이 우리에게 주신 것은\n두려워하는 마음이 아니요\n오직 능력과 사랑과 절제하는 마음이니", reference: "디모데후서 1:7" },
+            { text: "선한 싸움을 싸우고\n달려갈 길을 마치고\n믿음을 지켰으니", reference: "디모데후서 4:7" },
+            { text: "믿음은 바라는 것들의 실상이요\n보이지 않는 것들의 증거니", reference: "히브리서 11:1" },
+            { text: "믿음이 없이는 하나님을 기쁘시게 하지 못하나니\n하나님께 나아가는 자는\n반드시 그가 계신 것과\n또한 그가 자기를 찾는 자들에게\n상 주시는 이심을 믿어야 할지니라", reference: "히브리서 11:6" },
+            { text: "믿음의 주요 또 온전하게 하시는 이인\n예수를 바라보자", reference: "히브리서 12:2" },
+            { text: "너희 중에 누구든지 지혜가 부족하거든\n모든 사람에게 후히 주시고\n꾸짖지 아니하시는 하나님께 구하라\n그리하면 주시리라", reference: "야고보서 1:5" },
+            { text: "내 사랑하는 형제들아 너희가 알지니\n사람마다 듣기는 속히 하고\n말하기는 더디 하며\n성내기도 더디 하라", reference: "야고보서 1:19" },
+            { text: "그러므로 하나님께 복종할지어다\n마귀를 대적하라 그리하면\n너희를 피하리라", reference: "야고보서 4:7" },
+            { text: "하나님을 가까이하라\n그리하면 너희를 가까이하시리라", reference: "야고보서 4:8" },
+            { text: "너희 염려를 다 주께 맡기라\n이는 그가 너희를 돌보심이라", reference: "베드로전서 5:7" },
+            { text: "오직 너희를 부르신 거룩한 이처럼\n너희도 모든 행실에\n거룩한 자가 되라", reference: "베드로전서 1:15" },
+            { text: "하나님은 사랑이시라\n사랑 안에 거하는 자는\n하나님 안에 거하고\n하나님도 그의 안에 거하시느니라", reference: "요한일서 4:16" },
+            { text: "만일 우리가 우리 죄를 자백하면\n그는 미쁘시고 의로우사\n우리 죄를 사하시며\n우리를 모든 불의에서 깨끗하게 하실 것이요", reference: "요한일서 1:9" },
+            { text: "사랑 안에 두려움이 없고\n온전한 사랑이 두려움을 내쫓나니\n두려움에는 형벌이 있음이라", reference: "요한일서 4:18" },
+            { text: "볼지어다 내가 문 밖에 서서 두드리노니\n누구든지 내 음성을 듣고 문을 열면\n내가 그에게로 들어가\n그와 더불어 먹고 그는 나와 더불어 먹으리라", reference: "요한계시록 3:20" },
+            { text: "보라 내가 만물을 새롭게 하노라", reference: "요한계시록 21:5" },
+            { text: "하나님이 그들의 모든 눈물을 그 눈에서 닦아 주시니\n다시는 사망이 없고 애통하는 것이나\n곡하는 것이나 아픈 것이 다시 있지 아니하리니\n처음 것들이 다 지나갔음이러라", reference: "요한계시록 21:4" },
+            { text: "나는 알파와 오메가요\n처음과 마지막이요\n시작과 마침이라", reference: "요한계시록 22:13" }
+        ];
+
+        console.log(`✝ ${bibleVerses.length}개의 성경 구절이 로드되었습니다.`);
+
+        // 다크모드 토글 기능
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else if (savedTheme === 'light') {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            showToast(isDark ? '🌙 다크모드' : '☀️ 라이트모드');
+        }
+
+        // 페이지 로드 시 저장된 테마 적용
+        initTheme();
+
+        // 유틸리티 함수
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 최근 본 구절 추적
+        function getRecentVerses() {
+            const recent = sessionStorage.getItem('recentVerses');
+            return recent ? JSON.parse(recent) : [];
+        }
+
+        function addRecentVerse(index) {
+            const recent = getRecentVerses();
+            recent.unshift(index);
+            if (recent.length > 50) recent.pop();
+            sessionStorage.setItem('recentVerses', JSON.stringify(recent));
+        }
+
+        // 랜덤 인덱스 생성
+        function getRandomIndex() {
+            const recent = getRecentVerses();
+            let index;
+            let attempts = 0;
+            const maxAttempts = 20;
+
+            do {
+                const array = new Uint32Array(1);
+                crypto.getRandomValues(array);
+                index = array[0] % bibleVerses.length;
+                attempts++;
+            } while (recent.includes(index) && attempts < maxAttempts);
+
+            return index;
+        }
+
+        // 구절 표시
+        function displayVerse(index) {
+            const verse = bibleVerses[index];
+            const verseText = document.getElementById('verseText');
+            const verseReference = document.getElementById('verseReference');
+            const verseCard = document.getElementById('verseCard');
+
+            verseCard.classList.remove('show');
+
+            setTimeout(() => {
+                verseText.textContent = verse.text;
+                verseReference.textContent = verse.reference;
+                verseCard.classList.add('show');
+            }, 400);
+        }
+
+        // 새로운 말씀 보기
+        function showNewVerse() {
+            const index = getRandomIndex();
+            displayVerse(index);
+            addRecentVerse(index);
+        }
+
+        // URL 파라미터 처리
+        function handleUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const verseId = urlParams.get('verse');
+
+            if (verseId && !isNaN(verseId) && verseId >= 0 && verseId < bibleVerses.length) {
+                displayVerse(parseInt(verseId));
+                addRecentVerse(parseInt(verseId));
+            } else {
+                showNewVerse();
+            }
+        }
+
+        // 로딩 완료 후 초기 구절 표시
+        function onContentLoaded() {
+            const loading = document.getElementById('loading');
+
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                setTimeout(handleUrlParams, 300);
+            }, 800);
+        }
+
+        // 모달 관련
+        const savedVersesModal = document.getElementById('savedVersesModal');
+        const savedVersesList = document.getElementById('savedVersesList');
+
+        function showSavedVerses() {
+            const savedVerses = JSON.parse(localStorage.getItem('savedVerses') || '[]');
+            savedVersesList.innerHTML = '';
+
+            if (savedVerses.length === 0) {
+                savedVersesList.innerHTML = '<div class="no-saved-verses">📖 저장된 말씀이 없습니다.<br><small>마음에 드는 말씀을 저장해보세요!</small></div>';
+            } else {
+                savedVerses.forEach((verse, index) => {
+                    const verseItem = document.createElement('div');
+                    verseItem.className = 'saved-verse-item';
+                    verseItem.innerHTML = `
+                        <button class="delete-verse-btn" data-index="${index}" title="삭제">×</button>
+                        <div class="saved-verse-text">${verse.text}</div>
+                        <div class="saved-verse-reference">${verse.reference}</div>
+                        <div class="saved-verse-date">${new Date(verse.date).toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}</div>
+                    `;
+                    savedVersesList.appendChild(verseItem);
+                });
+
+                savedVersesList.querySelectorAll('.delete-verse-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const index = parseInt(this.getAttribute('data-index'));
+                        deleteVerse(index);
+                    });
+                });
+            }
+
+            savedVersesModal.classList.add('show');
+        }
+
+        function deleteVerse(index) {
+            const savedVerses = JSON.parse(localStorage.getItem('savedVerses') || '[]');
+            if (index >= 0 && index < savedVerses.length) {
+                savedVerses.splice(index, 1);
+                localStorage.setItem('savedVerses', JSON.stringify(savedVerses));
+                showToast('말씀이 삭제되었습니다');
+                showSavedVerses();
+            }
+        }
+
+        function closeSavedVersesModal() {
+            savedVersesModal.classList.remove('show');
+        }
+
+        function clearSavedVerses() {
+            const savedVerses = JSON.parse(localStorage.getItem('savedVerses') || '[]');
+            if (savedVerses.length === 0) {
+                showToast('삭제할 말씀이 없습니다');
+                return;
+            }
+            if (confirm('모든 저장된 말씀을 삭제하시겠습니까?')) {
+                localStorage.removeItem('savedVerses');
+                savedVersesList.innerHTML = '<div class="no-saved-verses">📖 저장된 말씀이 없습니다.<br><small>마음에 드는 말씀을 저장해보세요!</small></div>';
+                showToast('모든 말씀이 삭제되었습니다');
+            }
+        }
+
+        // 이벤트 리스너
+        document.getElementById('newVerseBtn').addEventListener('click', showNewVerse);
+
+        document.getElementById('saveVerseBtn').addEventListener('click', function () {
+            const verseText = document.getElementById('verseText').textContent;
+            const verseReference = document.getElementById('verseReference').textContent;
+            const savedVerses = JSON.parse(localStorage.getItem('savedVerses') || '[]');
+
+            if (!savedVerses.some(v => v.text === verseText)) {
+                savedVerses.push({
+                    text: verseText,
+                    reference: verseReference,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('savedVerses', JSON.stringify(savedVerses));
+                showToast('★ 말씀이 저장되었습니다');
+            } else {
+                showToast('이미 저장된 말씀입니다');
+            }
+        });
+
+        document.getElementById('shareVerseBtn').addEventListener('click', function () {
+            const verseText = document.getElementById('verseText').textContent;
+            const verseReference = document.getElementById('verseReference').textContent;
+            const currentUrl = new URL(window.location);
+            const index = bibleVerses.findIndex(v => v.text === verseText);
+
+            if (index !== -1) {
+                currentUrl.searchParams.set('verse', index);
+                const shareText = `✝ ${verseText}\n\n— ${verseReference}`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Daily Bread - 성경 말씀',
+                        text: shareText,
+                        url: currentUrl.toString()
+                    });
+                } else {
+                    navigator.clipboard.writeText(`${shareText}\n\n${currentUrl.toString()}`).then(() => {
+                        showToast('클립보드에 복사되었습니다');
+                    });
+                }
+            }
+        });
+
+        document.getElementById('viewSavedVersesBtn').addEventListener('click', showSavedVerses);
+        document.getElementById('closeModal').addEventListener('click', closeSavedVersesModal);
+        document.getElementById('closeModalBtn').addEventListener('click', closeSavedVersesModal);
+        document.getElementById('clearSavedVersesBtn').addEventListener('click', clearSavedVerses);
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // 모달 외부 클릭 시 닫기
+        savedVersesModal.addEventListener('click', function (e) {
+            if (e.target === savedVersesModal) {
+                closeSavedVersesModal();
+            }
+        });
+
+        // 페이지 로드 완료 후 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', onContentLoaded);
+        } else {
+            onContentLoaded();
+        }
+    </script>
+</body>
+
+</html>
