@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Daily Bread - 오늘의 성경 말씀</title>
     <meta name="description" content="매일 새로운 성경 말씀으로 하루를 시작하세요. 랜덤 성경 구절과 함께하는 영적 여정.">
+    <meta name="keywords" content="성경, 말씀, 오늘의 말씀, 랜덤 성경 구절, 데일리 브레드, 묵상, 기도, 신앙">
+    <meta name="author" content="Daily Bread">
+    <meta name="robots" content="index,follow">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="canonical" href="https://ramiteacher.github.io/">
+    <meta property="og:title" content="Daily Bread - 오늘의 성경 말씀">
+    <meta property="og:description" content="매일 새로운 성경 말씀으로 하루를 시작하세요. 랜덤 성경 구절과 함께하는 영적 여정.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ramiteacher.github.io/">
+    <meta property="og:site_name" content="Daily Bread">
+    <meta property="og:locale" content="ko_KR">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Daily Bread - 오늘의 성경 말씀">
+    <meta name="twitter:description" content="매일 새로운 성경 말씀으로 하루를 시작하세요. 랜덤 성경 구절과 함께하는 영적 여정.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -70,6 +84,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            cursor: pointer;
         }
 
         .logo-cross {
@@ -726,7 +741,7 @@
 
     <!-- 헤더 -->
     <header class="header">
-        <div class="logo">
+        <div class="logo" id="homeLogo" title="홈으로 이동">
             <span class="logo-cross">✝</span>
             Daily Bread
         </div>
@@ -1108,6 +1123,9 @@
         document.getElementById('closeModalBtn').addEventListener('click', closeSavedVersesModal);
         document.getElementById('clearSavedVersesBtn').addEventListener('click', clearSavedVerses);
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        document.getElementById('homeLogo').addEventListener('click', function () {
+            window.location.href = 'https://ramiteacher.github.io/';
+        });
 
         // 모달 외부 클릭 시 닫기
         savedVersesModal.addEventListener('click', function (e) {
